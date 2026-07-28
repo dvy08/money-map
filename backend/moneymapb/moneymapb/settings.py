@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',
     'income',
-    'transactions'
+    'transactions',
+    'expenses'
 ]
 
 MIDDLEWARE = [
@@ -93,6 +94,10 @@ DATABASES = {
         'HOST': tmpPostgres.hostname,
         'PORT': 5432,
         'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
+        "TEST": {
+                    "CHARSET": "utf8",
+                    'CONN_MAX_AGE': 0,
+                },
     }
 }
 
