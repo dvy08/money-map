@@ -93,6 +93,7 @@ class Expense(models.Model):
 
     def amount_spent_for_month(self, month, year):
         total = Transactions.objects.filter(
+            expense=self,
             transaction_date__year=year,
             transaction_date__month=month
         ).aggregate(
@@ -106,6 +107,7 @@ class Expense(models.Model):
         today = date.today()
 
         total = Transactions.objects.filter(
+            expense=self,
             transaction_date__year=today.year,
             transaction_date__month=today.month
         ).aggregate(
@@ -189,14 +191,15 @@ class FixedExpenseSchedule(models.Model):
     def days_until_due(self):
         return (self.due_date - date.today()).days
     
-    @property
-    def is_paid_this_month(self):
-        due = self.due_date
+##    @property
+##    def is_paid_this_month(self):
+##        due = self.due_date
 
-        return Transactions.objects.filter(
-            transaction_date__year=due.year,
-            transaction_date__month=due.month
-        ).exists()
+##        return Transactions.objects.filter(
+##            expense=self,
+##            transaction_date__year=due.year,
+##            transaction_date__month=due.month
+##        ).exists()
     
     @property
     def is_overdue(self):

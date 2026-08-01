@@ -76,6 +76,35 @@ class ExpenseCategoryModelTests(TestCase):
         self.assertEqual(str(self.category1), 'Groceries')
 
     ##METHODS
+    def test_amount_spent_for_month_only_aggregates_own_transactions(self):
+        expense = Expense.objects.create(
+            user = self.user,
+            category = self.category2,
+            name = 'Rent',
+            expense_type = 'Fixed',
+            budgeted_amount = Decimal("5000.00")
+        )
+        Transactions.objects.create(
+            user = self.user,
+            expense = expense,
+            amount = Decimal("1500.00"),
+            description = "Utilities - Rent",
+            transaction_date = date(2026, 6, 5)
+        ) 
+
+        self.assertEqual(self.category2.amount_spent_for_month(6, 2026), Decimal("1500.00")) 
+
+    def test_budgeted_amount_only_calculates_own_expenses(self):
+        Expense.objects.create(
+            user = self.user,
+            category = self.category2,
+            name = 'Rent',
+            expense_type = 'Fixed',
+            budgeted_amount = Decimal("5000.00")
+        )  
+
+        self.assertEqual(self.category1.budgeted_amount, Decimal("700.00"))
+        
     def test_amount_spent_for_month_returns_zero_with_no_transactions(self):
         self.assertEqual(self.category1.amount_spent_for_month(2, 2026), Decimal("0.00"))
 

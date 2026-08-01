@@ -2,6 +2,7 @@ from django.test import TestCase
 from transactions.models import Transactions
 from income.models import IncomeSource
 from expenses.models import Expense, ExpenseCategory
+from savings.models import Savings
 from django.contrib.auth import get_user_model
 from decimal import Decimal
 from datetime import date
@@ -31,6 +32,12 @@ class TransactionsModelTest(TestCase):
             name = 'Cereal',
             expense_type = 'variable',
             budgeted_amount = 200.00
+        )
+        cls.savings=Savings.objects.create(
+            user=cls.user,
+            fund_name='Holiday',
+            initial_amount=Decimal("0.00"),
+            budgeted_amount=Decimal("400.00")
         )
 
     def test_create_income_transaction(self):
@@ -66,3 +73,20 @@ class TransactionsModelTest(TestCase):
         self.assertEqual(transaction.description, "Bulk Cereal")
         self.assertEqual(transaction.transaction_type, Transactions.TransactionType.EXPENSE)
         self.assertEqual(transaction.expense, self.expense)
+
+    def test_create_savings_transaction(self):
+        transaction = Transactions.objects.create(
+            user=self.user,
+            amount=Decimal("400.00"),
+            transaction_date=date(2026, 6, 2),
+            description="Emergency Fund",
+            transaction_type=Transactions.TransactionType.SAVINGS,
+            savings=self.savings
+        )
+
+        self.assertEqual(transaction.user, self.user)
+        self.assertEqual(transaction.amount, Decimal("400.00"))
+        self.assertEqual(transaction.transaction_date, date(2026, 6, 2))
+        self.assertEqual(transaction.description, "Emergency Fund")
+        self.assertEqual(transaction.transaction_type, Transactions.TransactionType.SAVINGS)
+        self.assertEqual(transaction.savings, self.savings)

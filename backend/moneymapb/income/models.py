@@ -38,7 +38,9 @@ class IncomeSource(models.Model):
 
     @property
     def total_received_lifetime(self):
-        total = Transactions.objects.aggregate(
+        total = Transactions.objects.filter(
+            income_source=self
+        ).aggregate(
             total = Sum("amount")
         )["total"]
     
@@ -49,6 +51,7 @@ class IncomeSource(models.Model):
         today = date.today()
 
         total = Transactions.objects.filter(
+            income_source=self,
             transaction_date__year=today.year,
             transaction_date__month=today.month
         ).aggregate(
@@ -60,6 +63,7 @@ class IncomeSource(models.Model):
 
     def total_received_for_month(self, year, month):
         total = Transactions.objects.filter(
+            income_source=self,
             transaction_date__year=year,
             transaction_date__month=month
         ).aggregate(

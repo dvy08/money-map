@@ -55,6 +55,24 @@ class IncomeSourceModelTest(TestCase):
         self.assertEqual(source.goal_amount, Decimal("10000.00"))
 
     ##TOTAL_RECEIVED_LIFETIME
+    def test_total_received_lifetime_aggregates_only_own_transactions(self):
+        Transactions.objects.create(
+            user=self.user,
+            amount=Decimal("5000.00"),
+            transaction_date=date.today(),
+            transaction_type="income",
+            income_source=self.source
+        )
+        Transactions.objects.create(
+            user=self.user,
+            amount=Decimal("10000.00"),
+            transaction_date=date.today(),
+            transaction_type="income",
+            income_source=self.source1
+        )
+
+        self.assertEqual(self.source.total_received_lifetime, Decimal("5000.00"))   
+
     def test_total_received_lifetime_returns_zero_when_no_transactions(self):
         self.assertEqual(self.source.total_received_lifetime, Decimal("0.00"))
 
@@ -77,6 +95,24 @@ class IncomeSourceModelTest(TestCase):
         self.assertEqual(self.source.total_received_lifetime, Decimal("25000.00"))
 
     ##TOTAL_RECEIVED_FOR_CURRENT_MONTH
+    def test_total_received_for_current_month_aggregates_only_own_transactions(self):
+        Transactions.objects.create(
+            user=self.user,
+            amount=Decimal("5000.00"),
+            transaction_date=date.today(),
+            transaction_type="income",
+            income_source=self.source
+        )
+        Transactions.objects.create(
+            user=self.user,
+            amount=Decimal("10000.00"),
+            transaction_date=date.today(),
+            transaction_type="income",
+            income_source=self.source1
+        )
+    
+        self.assertEqual(self.source.total_received_for_current_month, Decimal("5000.00"))
+
     def test_total_received_for_current_month_returns_zero_when_no_transactions(self):
         self.assertEqual(self.source.total_received_for_current_month, Decimal("0.00"))
     
@@ -99,6 +135,26 @@ class IncomeSourceModelTest(TestCase):
         self.assertEqual(self.source.total_received_for_current_month, Decimal("20000.00"))
     
     ##TOTAL_RECEIVED_FOR_MONTH
+    def test_total_received_for_month_aggregates_only_own_transactions(self):
+        Transactions.objects.create(
+            user=self.user,
+            amount=Decimal("5000.00"),
+            transaction_date=date.today(),
+            transaction_type="income",
+            income_source=self.source
+        )
+        Transactions.objects.create(
+            user=self.user,
+            amount=Decimal("10000.00"),
+            transaction_date=date.today(),
+            transaction_type="income",
+            income_source=self.source1
+        )
+    
+        self.assertEqual(
+            self.source.total_received_for_month(date.today().year, date.today().month), Decimal("5000.00")
+            )
+
     def test_total_received_for_month_returns_zero_when_no_transactions(self):
         self.assertEqual(self.source.total_received_for_month(2026, 1), Decimal("0.00"))
     

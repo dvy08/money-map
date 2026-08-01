@@ -21,7 +21,7 @@ class TransactionsSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at"
         ]
-        read_only_fields = ["id","user", "created_at", "updated_at"]
+        read_only_fields = ["id", "user", "created_at", "updated_at"]
 
         def validate(self, attrs):
             transaction_type = attrs.get("transaction_type")

@@ -42,6 +42,13 @@ class Transactions(models.Model):
         blank=True,
         related_name="transactions"
     )
+    savings = models.ForeignKey(
+        "savings.Savings",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="transactions"
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )
