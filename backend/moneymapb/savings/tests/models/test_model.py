@@ -8,7 +8,7 @@ from django.utils import timezone
 
 User = get_user_model()
 
-class IncomeSourceModelTest(TestCase):
+class SavingsModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(

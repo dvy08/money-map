@@ -18,23 +18,35 @@ class TransactionsSerializer(serializers.ModelSerializer):
             "transaction_type",
             "transaction_type_display",
             "income_source",
+            "expense",
+            "savings",
+            "debts",
             "created_at",
             "updated_at"
         ]
         read_only_fields = ["id", "user", "created_at", "updated_at"]
 
-        def validate(self, attrs):
-            transaction_type = attrs.get("transaction_type")
-            income_source = attrs.get("income_source")
+    def validate(self, attrs):
+        transaction_type = attrs.get("transaction_type")
 
-            if (
-                transaction_type == transaction_type.TransactionType.INCOME and not income_source
-            ):
+        mapping = {
+            "income": "income_source",
+            "expense": "expense",
+            "savings": "savings",
+            "debts": "debts"
+        }
+
+        required_field = mapping.get(transaction_type)
+
+        for field in mapping.values():
+            if field != required_field and attrs.get(field):
                 raise serializers.ValidationError(
-                    {
-                        "income_source": (
-                            "Income transactions must have an income source"
-                        )
-                    }
+                    {field: f"{field} should only be set for its matching transaction type."}
                 )
-            return attrs
+
+        if required_field and not attrs.get(required_field):
+            raise serializers.ValidationError(
+                {required_field: f"{required_field} is required for {transaction_type} transactions."}
+            )
+
+        return attrs
