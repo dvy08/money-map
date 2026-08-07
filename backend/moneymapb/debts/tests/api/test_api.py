@@ -152,6 +152,7 @@ class DebtsAPITests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("balance", response.data)
 
     def test_user_can_patch_debt(self):
         debt=Debts.objects.create(

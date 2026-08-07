@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from rest_framework import status 
 from rest_framework.test import APITestCase
 
@@ -177,3 +178,27 @@ class ExpenseCategoryAPITests(APITestCase):
         
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(ExpenseCategory.objects.count(), 0)
+
+    ##METHODS - GET
+    def test_user_can_get_category_amount_spent_for_month(self):
+        self.client.force_authenticate(
+            user = self.user1
+        )
+
+        category = ExpenseCategory.objects.create(
+            user=self.user1,
+            name="Groceries"
+        )
+
+        url = reverse(
+            "expense_category_amount_spent_for_month",
+            kwargs={"pk": category.pk}
+        )
+        
+        response = self.client.get(
+            url,
+           {"month": 8, "year":2026}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("amount_spent_for_month", response.data)

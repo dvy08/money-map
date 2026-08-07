@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status 
 from rest_framework.test import APITestCase
 from datetime import date
+from django.urls import reverse
 
 from expenses.models import ExpenseCategory, Expense, FixedExpenseSchedule
 
@@ -216,3 +217,28 @@ class FixedBillScheduleAPITests(APITestCase):
         
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(FixedExpenseSchedule.objects.count(), 0)
+
+    ##METHODS - GET
+    def test_user_can_get_fixed_expense_schedule_get_occurances_between(self):
+        self.client.force_authenticate(
+            user = self.user1
+        )
+
+        schedule = FixedExpenseSchedule.objects.create(
+            expense=self.expense1,
+            frequency='monthly',
+            start_date= date(2026, 7, 1)
+        )
+
+        url = reverse(
+            "fixed_expense_schedule_get_occurances_between",
+            kwargs={"pk": schedule.pk}
+        )
+        
+        response = self.client.get(
+            url,
+           {"start_date": date(2026, 7, 1), "end_date": date(2026, 7, 30)}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("get_occurances_between", response.data)

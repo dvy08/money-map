@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator
 from transactions.models import Transactions
 from decimal import Decimal
 from django.db.models import Sum
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import calendar
 
 # Create your models here.
